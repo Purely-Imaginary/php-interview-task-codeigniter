@@ -5,6 +5,7 @@ namespace App\FleetManagement\Infrastructure\Controllers;
 use App\FleetManagement\Domain\Coaster;
 use App\FleetManagement\Infrastructure\RedisCoasterRepository;
 use App\Common\Domain\TimeRange;
+use App\Common\Traits\ApiResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 
 /**
@@ -13,6 +14,8 @@ use CodeIgniter\RESTful\ResourceController;
  */
 class CoasterController extends ResourceController
 {
+    use ApiResponseTrait;
+
     /**
      * @var RedisCoasterRepository
      */
@@ -23,7 +26,7 @@ class CoasterController extends ResourceController
      */
     public function __construct()
     {
-        $this->repository = new RedisCoasterRepository();
+        $this->repository = service('coasterRepository');
     }
 
     /**
@@ -37,7 +40,7 @@ class CoasterController extends ResourceController
 
         // Validate request
         if (!$this->validateCoasterData($json)) {
-            return $this->failValidationErrors($this->validator->getErrors());
+            return $this->respondError('Validation failed', $this->validator->getErrors(), 400);
         }
 
         try {
@@ -51,15 +54,11 @@ class CoasterController extends ResourceController
 
             $this->repository->save($coaster);
 
-            return $this->respondCreated([
-                'status' => 'success',
-                'message' => 'Coaster created successfully',
-                'data' => [
-                    'id' => $coaster->getId()
-                ]
-            ]);
+            return $this->respondCreatedSuccess([
+                'id' => $coaster->getId()
+            ], 'Coaster created successfully');
         } catch (\Exception $e) {
-            return $this->failServerError('An error occurred: ' . $e->getMessage());
+            return $this->respondError('An error occurred', ['message' => $e->getMessage()], 500);
         }
     }
 
@@ -75,14 +74,14 @@ class CoasterController extends ResourceController
 
         // Validate request
         if (!$this->validateCoasterUpdateData($json)) {
-            return $this->failValidationErrors($this->validator->getErrors());
+            return $this->respondError('Validation failed', $this->validator->getErrors(), 400);
         }
 
         try {
             $coaster = $this->repository->findById($id);
 
             if (!$coaster) {
-                return $this->failNotFound('Coaster not found');
+                return $this->respondError('Coaster not found', [], 404);
             }
 
             $coaster->update(
@@ -93,12 +92,9 @@ class CoasterController extends ResourceController
 
             $this->repository->save($coaster);
 
-            return $this->respond([
-                'status' => 'success',
-                'message' => 'Coaster updated successfully'
-            ]);
+            return $this->respondSuccess([], 'Coaster updated successfully');
         } catch (\Exception $e) {
-            return $this->failServerError('An error occurred: ' . $e->getMessage());
+            return $this->respondError('An error occurred', ['message' => $e->getMessage()], 500);
         }
     }
 

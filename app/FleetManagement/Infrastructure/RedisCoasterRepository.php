@@ -24,21 +24,27 @@ class RedisCoasterRepository implements CoasterRepository
 
     /**
      * Constructor
+     *
+     * @param \Redis $redis
      */
-    public function __construct()
+    public function __construct(\Redis $redis = null)
     {
-        $config = new Redis();
-        $this->redis = new \Redis();
-        $this->redis->connect(
-            $config->host,
-            $config->port
-        );
+        if ($redis) {
+            $this->redis = $redis;
+        } else {
+            $config = new Redis();
+            $this->redis = new \Redis();
+            $this->redis->connect(
+                $config->host,
+                $config->port
+            );
 
-        if (!empty($config->password)) {
-            $this->redis->auth($config->password);
+            if (!empty($config->password)) {
+                $this->redis->auth($config->password);
+            }
+
+            $this->redis->select($config->database);
         }
-
-        $this->redis->select($config->database);
 
         // Use different key prefixes for different environments
         $this->keyPrefix = 'coaster:' . (getenv('APP_ENVIRONMENT') === 'production' ? 'prod:' : 'dev:');

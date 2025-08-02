@@ -1,6 +1,7 @@
 # Amusement Park Coaster Management System
 
-This application manages roller coasters and their assigned wagons in an amusement park. It analyzes if the park has sufficient resources (wagons and personnel) to handle the projected number of daily clients for each roller coaster.
+This application manages roller coasters and their assigned wagons in an amusement park.
+It analyzes if the park has enough resources (wagons and personnel) to handle the projected number of daily clients for each roller coaster.
 
 ## Architecture
 

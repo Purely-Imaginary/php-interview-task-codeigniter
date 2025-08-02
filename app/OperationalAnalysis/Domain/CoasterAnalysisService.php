@@ -15,39 +15,50 @@ class CoasterAnalysisService
     /**
      * @var PersonnelAnalysisService
      */
-    private $personnelAnalysisService;
+    protected $personnelAnalysisService;
 
     /**
      * @var ThroughputAnalysisService
      */
-    private $throughputAnalysisService;
+    protected $throughputAnalysisService;
 
     /**
      * @var \Redis
      */
-    private $redis;
+    protected $redis;
 
     /**
      * Constructor
+     *
+     * @param PersonnelAnalysisService $personnelAnalysisService
+     * @param ThroughputAnalysisService $throughputAnalysisService
+     * @param \Redis $redis
      */
-    public function __construct()
-    {
-        $this->personnelAnalysisService = new PersonnelAnalysisService();
-        $this->throughputAnalysisService = new ThroughputAnalysisService();
+    public function __construct(
+        PersonnelAnalysisService $personnelAnalysisService = null,
+        ThroughputAnalysisService $throughputAnalysisService = null,
+        \Redis $redis = null
+    ) {
+        $this->personnelAnalysisService = $personnelAnalysisService ?? service('personnelAnalysisService');
+        $this->throughputAnalysisService = $throughputAnalysisService ?? service('throughputAnalysisService');
 
-        // Connect to Redis
-        $config = new Redis();
-        $this->redis = new \Redis();
-        $this->redis->connect(
-            $config->host,
-            $config->port
-        );
+        if ($redis) {
+            $this->redis = $redis;
+        } else {
+            // Connect to Redis
+            $config = new Redis();
+            $this->redis = new \Redis();
+            $this->redis->connect(
+                $config->host,
+                $config->port
+            );
 
-        if (!empty($config->password)) {
-            $this->redis->auth($config->password);
+            if (!empty($config->password)) {
+                $this->redis->auth($config->password);
+            }
+
+            $this->redis->select($config->database);
         }
-
-        $this->redis->select($config->database);
     }
 
     /**

@@ -25,9 +25,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Install ReactPHP and Redis client
-RUN composer require clue/reactphp-redis react/event-loop
-
 # Copy custom php.ini if needed
 # COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 

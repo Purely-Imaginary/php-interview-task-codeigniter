@@ -30,25 +30,36 @@ class CoasterConfigurationChangedListener
 
     /**
      * Constructor
+     *
+     * @param CoasterRepository $coasterRepository
+     * @param CoasterAnalysisService $analysisService
+     * @param \Redis $redis
      */
-    public function __construct()
-    {
-        $this->coasterRepository = new RedisCoasterRepository();
-        $this->analysisService = new CoasterAnalysisService();
+    public function __construct(
+        CoasterRepository $coasterRepository = null,
+        CoasterAnalysisService $analysisService = null,
+        \Redis $redis = null
+    ) {
+        $this->coasterRepository = $coasterRepository ?? service('coasterRepository');
+        $this->analysisService = $analysisService ?? service('coasterAnalysisService');
 
-        // Connect to Redis
-        $config = new Redis();
-        $this->redis = new \Redis();
-        $this->redis->connect(
-            $config->host,
-            $config->port
-        );
+        if ($redis) {
+            $this->redis = $redis;
+        } else {
+            // Connect to Redis
+            $config = new Redis();
+            $this->redis = new \Redis();
+            $this->redis->connect(
+                $config->host,
+                $config->port
+            );
 
-        if (!empty($config->password)) {
-            $this->redis->auth($config->password);
+            if (!empty($config->password)) {
+                $this->redis->auth($config->password);
+            }
+
+            $this->redis->select($config->database);
         }
-
-        $this->redis->select($config->database);
     }
 
     /**
