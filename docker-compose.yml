@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - APP_ENVIRONMENT=${APP_ENVIRONMENT:-development}
+      - CI_ENVIRONMENT=${CI_ENVIRONMENT:-development}
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis-data:
