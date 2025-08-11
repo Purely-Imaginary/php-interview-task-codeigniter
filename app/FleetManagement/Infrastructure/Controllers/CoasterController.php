@@ -32,14 +32,14 @@ class CoasterController extends ResourceController
     /**
      * Create a new coaster
      *
-     * @return \CodeIgniter\HTTP\Response
+     * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function create()
     {
         $json = $this->request->getJSON(true);
 
         // Validate request
-        if (!$this->validateCoasterData($json)) {
+        if (!$this->validateData($json, $this->validator->getRuleGroup('coaster.create'))) {
             return $this->respondError('Validation failed', $this->validator->getErrors(), 400);
         }
 
@@ -66,14 +66,14 @@ class CoasterController extends ResourceController
      * Update a coaster
      *
      * @param string $id
-     * @return \CodeIgniter\HTTP\Response
+     * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function update($id = null)
     {
         $json = $this->request->getJSON(true);
 
         // Validate request
-        if (!$this->validateCoasterUpdateData($json)) {
+        if (!$this->validateData($json, $this->validator->getRuleGroup('coaster.update'))) {
             return $this->respondError('Validation failed', $this->validator->getErrors(), 400);
         }
 
@@ -96,48 +96,5 @@ class CoasterController extends ResourceController
         } catch (\Exception $e) {
             return $this->respondError('An error occurred', ['message' => $e->getMessage()], 500);
         }
-    }
-
-    /**
-     * Validate coaster data for creation
-     *
-     * @param array $data
-     * @return bool
-     */
-    private function validateCoasterData($data)
-    {
-        $rules = [
-            'personnel_count' => 'required|integer|greater_than[0]',
-            'daily_clients' => 'required|integer|greater_than[0]',
-            'track_length_meters' => 'required|integer|greater_than[0]',
-            'operating_hours_start' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
-            'operating_hours_end' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]'
-        ];
-
-        $this->validator = \Config\Services::validation();
-        $this->validator->setRules($rules);
-
-        return $this->validator->run($data);
-    }
-
-    /**
-     * Validate coaster data for update
-     *
-     * @param array $data
-     * @return bool
-     */
-    private function validateCoasterUpdateData($data)
-    {
-        $rules = [
-            'personnel_count' => 'required|integer|greater_than[0]',
-            'daily_clients' => 'required|integer|greater_than[0]',
-            'operating_hours_start' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
-            'operating_hours_end' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]'
-        ];
-
-        $this->validator = \Config\Services::validation();
-        $this->validator->setRules($rules);
-
-        return $this->validator->run($data);
     }
 }

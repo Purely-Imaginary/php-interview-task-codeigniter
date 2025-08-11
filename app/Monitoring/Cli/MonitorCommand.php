@@ -7,6 +7,7 @@ use CodeIgniter\CLI\CLI;
 use React\EventLoop\Factory;
 use Clue\React\Redis\Factory as RedisFactory;
 use Config\Redis;
+use Config\EventChannels;
 
 /**
  * Monitor Command
@@ -99,14 +100,14 @@ class MonitorCommand extends BaseCommand
         $client->select($config->database);
 
         // Subscribe to operational_status_updates channel
-        $client->subscribe('operational_status_updates')->then(function () {
+        $client->subscribe(EventChannels::OPERATIONAL_STATUS_UPDATES)->then(function () {
             CLI::write('Subscribed to operational_status_updates channel', 'green');
         }, function ($error) {
             CLI::error("Error subscribing to channel: " . $error->getMessage());
         });
 
         // Subscribe to capacity_problems channel
-        $client->subscribe('capacity_problems')->then(function () {
+        $client->subscribe(EventChannels::CAPACITY_PROBLEMS)->then(function () {
             CLI::write('Subscribed to capacity_problems channel', 'green');
         }, function ($error) {
             CLI::error("Error subscribing to channel: " . $error->getMessage());
@@ -116,10 +117,10 @@ class MonitorCommand extends BaseCommand
         $client->on('message', function ($channel, $message) {
             $data = json_decode($message, true);
 
-            if ($channel === 'operational_status_updates') {
+            if ($channel === EventChannels::OPERATIONAL_STATUS_UPDATES) {
                 $this->updateCoasterStatus($data);
                 $this->displayDashboard();
-            } elseif ($channel === 'capacity_problems') {
+            } elseif ($channel === EventChannels::CAPACITY_PROBLEMS) {
                 $this->logProblem($data);
             }
         });

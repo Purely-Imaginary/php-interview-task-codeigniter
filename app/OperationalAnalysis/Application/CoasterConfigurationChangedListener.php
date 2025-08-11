@@ -6,6 +6,7 @@ use App\FleetManagement\Domain\CoasterRepository;
 use App\FleetManagement\Infrastructure\RedisCoasterRepository;
 use App\OperationalAnalysis\Domain\CoasterAnalysisService;
 use Config\Redis;
+use Config\EventChannels;
 
 /**
  * Coaster Configuration Changed Listener
@@ -68,7 +69,7 @@ class CoasterConfigurationChangedListener
     public function listen()
     {
         // Subscribe to the coaster.configuration.changed channel
-        $this->redis->subscribe(['coaster.configuration.changed'], [$this, 'handleEvent']);
+        $this->redis->subscribe([EventChannels::CONFIGURATION_CHANGED], [$this, 'handleEvent']);
     }
 
     /**

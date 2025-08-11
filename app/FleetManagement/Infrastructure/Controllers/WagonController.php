@@ -29,14 +29,14 @@ class WagonController extends ResourceController
      * Create a new wagon for a coaster
      *
      * @param string $coasterId
-     * @return \CodeIgniter\HTTP\Response
+     * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function create($coasterId = null)
     {
         $json = $this->request->getJSON(true);
 
         // Validate request
-        if (!$this->validateWagonData($json)) {
+        if (!$this->validateData($json, $this->validator->getRuleGroup('wagon.create'))) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
@@ -72,7 +72,7 @@ class WagonController extends ResourceController
      *
      * @param string $coasterId
      * @param string $wagonId
-     * @return \CodeIgniter\HTTP\Response
+     * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function delete($coasterId = null, $wagonId = null)
     {
@@ -83,38 +83,18 @@ class WagonController extends ResourceController
                 return $this->failNotFound('Coaster not found');
             }
 
-            try {
-                $coaster->removeWagon($wagonId);
-                $this->repository->save($coaster);
+            $coaster->removeWagon($wagonId);
+            $this->repository->save($coaster);
 
-                return $this->respondDeleted([
-                    'status' => 'success',
-                    'message' => 'Wagon removed successfully'
-                ]);
-            } catch (\InvalidArgumentException $e) {
-                return $this->failNotFound('Wagon not found');
-            }
+            return $this->respondDeleted([
+                'status'  => 'success',
+                'message' => 'Wagon removed successfully'
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->failNotFound($e->getMessage()); // Use the exception message
         } catch (\Exception $e) {
-            return $this->failServerError('An error occurred: ' . $e->getMessage());
+            log_message('error', '[WAGON_DELETE_ERROR] ' . $e->getMessage());
+            return $this->failServerError('An unexpected error occurred.');
         }
-    }
-
-    /**
-     * Validate wagon data
-     *
-     * @param array $data
-     * @return bool
-     */
-    private function validateWagonData($data)
-    {
-        $rules = [
-            'seat_count' => 'required|integer|greater_than[0]',
-            'speed_mps' => 'required|numeric|greater_than[0]'
-        ];
-
-        $this->validator = \Config\Services::validation();
-        $this->validator->setRules($rules);
-
-        return $this->validator->run($data);
     }
 }

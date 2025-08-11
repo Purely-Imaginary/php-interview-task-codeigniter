@@ -5,6 +5,7 @@ namespace App\OperationalAnalysis\Domain;
 use App\FleetManagement\Domain\Coaster;
 use App\FleetManagement\Domain\CoasterRepository;
 use Config\Redis;
+use Config\EventChannels;
 
 /**
  * Coaster Analysis Service
@@ -93,7 +94,7 @@ class CoasterAnalysisService
         ];
 
         // Publish to operational_status_updates channel
-        $this->redis->publish('operational_status_updates', json_encode($result));
+        $this->redis->publish(EventChannels::OPERATIONAL_STATUS_UPDATES, json_encode($result));
 
         // If there's a problem, publish to capacity_problems channel
         if ($status !== 'OK') {
@@ -105,7 +106,7 @@ class CoasterAnalysisService
                 'details' => $problemDetails
             ];
 
-            $this->redis->publish('capacity_problems', json_encode($problemMessage));
+            $this->redis->publish(EventChannels::CAPACITY_PROBLEMS, json_encode($problemMessage));
         }
 
         return $result;

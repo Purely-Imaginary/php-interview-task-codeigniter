@@ -41,4 +41,27 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
+
+    public array $coaster = [
+        'create' => [
+            'personnel_count'       => 'required|integer|greater_than[0]',
+            'daily_clients'         => 'required|integer|greater_than[0]',
+            'track_length_meters'   => 'required|integer|greater_than[0]',
+            'operating_hours_start' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
+            'operating_hours_end'   => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
+        ],
+        'update' => [
+            'personnel_count'       => 'required|integer|greater_than[0]',
+            'daily_clients'         => 'required|integer|greater_than[0]',
+            'operating_hours_start' => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
+            'operating_hours_end'   => 'required|regex_match[/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/]',
+        ],
+    ];
+
+    public array $wagon = [
+        'create' => [
+            'seat_count' => 'required|integer|greater_than[0]',
+            'speed_mps'  => 'required|numeric|greater_than[0]',
+        ],
+    ];
 }
