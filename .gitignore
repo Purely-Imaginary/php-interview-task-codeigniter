@@ -1,0 +1,13 @@
+/vendor/
+.env
+/writable/
+/build/
+.phpunit.result.cache
+.phpcs.cache
+.idea/
+.vscode/
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+*-firebase-credentials.json
