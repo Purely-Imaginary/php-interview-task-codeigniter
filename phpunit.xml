@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/codeigniter4/framework/system/Test/bootstrap.php"
+<phpunit bootstrap="tests/bootstrap.php"
          backupGlobals="false"
          colors="true"
          convertErrorsToExceptions="true"
@@ -28,7 +28,7 @@
     </filter>
     <php>
         <server name="app.baseURL" value="http://localhost:8080"/>
-        <env name="CI_ENVIRONMENT" value="testing"/>
+        <server name="CI_ENVIRONMENT" value="testing"/>
         <env name="APP_ENVIRONMENT" value="testing"/>
     </php>
 </phpunit>

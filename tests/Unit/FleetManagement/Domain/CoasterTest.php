@@ -17,7 +17,7 @@ class CoasterTest extends CIUnitTestCase
     private $trackLength;
     private $operatingHours;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

@@ -2,16 +2,15 @@
 
 namespace Tests\Unit\OperationalAnalysis\Domain;
 
+use App\Common\Domain\Distance;
+use App\Common\Domain\TimeRange;
+use App\FleetManagement\Domain\Coaster;
+use App\FleetManagement\Domain\Wagon;
 use App\OperationalAnalysis\Domain\CoasterAnalysisService;
 use App\OperationalAnalysis\Domain\PersonnelAnalysisService;
 use App\OperationalAnalysis\Domain\ThroughputAnalysisService;
-use App\FleetManagement\Domain\Coaster;
-use App\FleetManagement\Domain\Wagon;
-use App\Common\Domain\Distance;
-use App\Common\Domain\TimeRange;
 use CodeIgniter\Test\CIUnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Unit\OperationalAnalysis\Domain\CoasterAnalysisServiceTestable;
 
 class CoasterAnalysisServiceTest extends CIUnitTestCase
 {
